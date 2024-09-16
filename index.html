@@ -1,0 +1,153 @@
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT PT2</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <label for="prompt">Insira seu prompt</label>
+        <textarea cols="40" rows="10" name="prompt" id="prompt"></textarea>
+        
+        <label for="resposta">Resposta IA</label>
+        <textarea cols="40" rows="10" name="resposta" id="resposta" readonly></textarea>
+        
+        <input type="button" value="Enviar" onclick="run()">
+    </div>
+
+    <body>
+      <script type="importmap">
+          {
+            "imports": {
+              "@google/generative-ai": "https://esm.run/@google/generative-ai"
+            }
+          }
+        </script>
+      <script type="module">
+        import { GoogleGenerativeAI } from "@google/generative-ai";
+  
+        // Fetch your API_KEY
+        const API_KEY = "AIzaSyB-BZicHWUgPzWriX8DhEf4Ap4x6lrNB3o";
+  
+        // Access your API key (see "Set up your API key" above)
+        const genAI = new GoogleGenerativeAI(API_KEY);
+  
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
+  
+        async function run() {
+           const prompt = "Gemini, Você é um vendedor de carros de alta performance, e fala somente sobre esse assunto"
+  
+           const result = await model.generateContent(prompt);
+           const response = await result.response;
+           const text = response.text();
+  
+    document.getElementById("resposta").value = text;
+    console.log(text);
+  }
+  run();
+    </script>
+  </body>
+  </html>
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT PT2</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <label for="prompt">Insira seu prompt</label>
+        <textarea cols="40" rows="10" name="prompt" id="prompt"></textarea>
+        
+        <label for="resposta">Resposta IA</label>
+        <textarea cols="40" rows="10" name="resposta" id="resposta" readonly></textarea>
+        
+        <input type="button" id="sendButton" value="Enviar">
+    </div>
+
+    <!-- Importa o módulo do Google Generative AI -->
+    <script type="module">
+        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+        // Fetch your API_KEY
+        const API_KEY = "AIzaSyB-BZicHWUgPzWriX8DhEf4Ap4x6lrNB3o";
+      
+        // Access your API key
+        const genAI = new GoogleGenerativeAI(API_KEY);
+      
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        async function run() {
+            const prompt = document.getElementById("prompt").value;
+            const userId = "some-user-id"; // Substitua com o ID do usuário real
+
+            try {
+                // Enviar prompt para o modelo e obter resposta
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const text = await response.text();
+
+                // Exibir resposta
+                document.getElementById("resposta").value = text;
+                console.log(text);
+
+                // Salvar conversa e login
+                await saveConversation(userId, prompt, text);
+                await saveLogin(userId);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function saveConversation(userId, prompt, response) {
+            try {
+                const res = await fetch('/api/conversations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId, prompt, response })
+                });
+                if (res.ok) {
+                    console.log('Conversation saved');
+                } else {
+                    console.log('Failed to save conversation');
+                }
+            } catch (error) {
+                console.error('Error saving conversation:', error);
+            }
+        }
+
+        async function saveLogin(userId) {
+            try {
+                const res = await fetch('/api/logins', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId })
+                });
+                if (res.ok) {
+                    console.log('Login saved');
+                } else {
+                    console.log('Failed to save login');
+                }
+            } catch (error) {
+                console.error('Error saving login:', error);
+            }
+        }
+
+        // Adicionar o listener de evento ao botão
+        document.getElementById('sendButton').addEventListener('click', run);
+    </script>
+</body>
+</html>
+
+
